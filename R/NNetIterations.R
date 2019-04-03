@@ -15,9 +15,10 @@
 #' data(ozone, package="ElemStatLearn")
 #' X.mat <- as.matrix(ozone[,-1])
 #' y.vec <- as.vector(ozone[,1])
-#' n.hidden.units <- 2
-#' max.iterations <- 50
+#' n.hidden.units <- 5
+#' max.iterations <- 100
 #' is.train <- TRUE
+#' step.size <- 0.1
 #' res <- NNetIterations( X.mat, y.vec, max.iterations, step.size, n.hidden.units, is.train)
 #' 
 NNetIterations <- function(
@@ -44,12 +45,14 @@ NNetIterations <- function(
     b <- as.numeric(z %*% w)
     pred.mat[,i] <- b
     delta.w <- b - y.vec
-    A.deriv <- z * (1 - z)
+    
+    A.deriv <- z * (rep(1,n.hidden.units) - z)
     delta.v <- diag(delta.w) %*% A.deriv %*% diag(w)
+    
     grad.w <- t(z) %*% delta.w / nrow(X.scaled.mat)
-    grad.V <- t(X.scaled.mat) %*% delta.v / nrow(X.scaled.mat)
+    grad.v <- t(X.scaled.mat) %*% delta.v / nrow(X.scaled.mat)
     ## take a step
-    w <- w - step.size * grad.w
+    w <- as.numeric(w - step.size * grad.w)
     v <- v - step.size * grad.v
   }
   
