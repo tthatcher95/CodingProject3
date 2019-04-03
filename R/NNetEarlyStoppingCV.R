@@ -28,13 +28,15 @@
 #'    y.vec<-SAheart [1:50, 9]
 #'    max.iterations <- 100
 #'    fold.vec <- sample(rep(1:5, l=nrow(X.mat)))
+#'    n.hidden.units <- 2
 #'    
-#'    result <- LMLogisticLossEarlyStoppingCV(X.mat, y.vec, fold.vec, max.iterations)
-LMLogisticLossEarlyStoppingCV <- function(
+#'    result <- NNetEarlyStoppingCV(X.mat, y.vec, fold.vec, max.iterations, n.hidden.units)
+NNetEarlyStoppingCV <- function(
   X.mat,
   y.vec,
   fold.vec,
-  max.iterations
+  max.iterations,
+  n.hidden.units
 ){
   
   if(nrow(X.mat) <= 0 || ncol(X.mat) <= 0 || nrow(y.vec) <= 0 || ncol(y.vec) <= 0)  
@@ -58,7 +60,7 @@ LMLogisticLossEarlyStoppingCV <- function(
     n_rows_validation_set <- nrow(validation_set)
     n_rows_train_set <- nrow(train_set)
     
-    W <- LMSquareLossIterations(train_set,train_labels, max.iterations, step_size)
+    W <- NNetIterations(train_set,train_labels, max.iterations, step_size, n.hidden.units, fold.vec)
     for(prediction.set.name in c("train", "validation")){
       if(identical(prediction.set.name, "train")){
         to.be.predicted <- train_set
@@ -80,7 +82,7 @@ LMLogisticLossEarlyStoppingCV <- function(
   mean.validation.loss.vec <- rowMeans(validation.loss.mat)
   mean.train.loss.vec <- rowMeans(train.loss.mat)
   selected.steps <- which.min(mean.validation.loss.vec)
-  w.head <- LMLogisticLossIterations(X.mat,y.vec, selected.steps, step_size)
+  # w.head <- LMLogisticLossIterations(X.mat,y.vec, selected.steps, step_size)
   weight_vec <- w.head[,selected.steps]
   
   returnList <- list(mean.validation.loss = mean.validation.loss.vec,
