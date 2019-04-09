@@ -27,29 +27,33 @@
 #'    X.mat<-SAheart [1:50,-9]
 #'    y.vec<-SAheart [1:50, 9]
 #'    max.iterations <- 100
-#'    fold.vec <- sample(rep(1:5, l=nrow(X.mat)))
+#'    step.size <- .5
 #'    n.hidden.units <- 2
 #'    
 #'    result <- NNetEarlyStoppingCV(X.mat, y.vec, fold.vec, max.iterations, n.hidden.units)
 NNetEarlyStoppingCV <- function(
   X.mat,
   y.vec,
-  fold.vec,
+  fold.vec=sample(rep(1:n.folds), length(y.vec)),
   max.iterations,
-  n.hidden.units
-){
+  step.size,
+  n.hidden.units,
+  n.folds=4)
+{
+  
+  if(!is.matrix(X.mat))
+  {
+    error("Feature matrix or Label vec has unexpected dimensions")
+  }
   
   if(nrow(X.mat) <= 0 || ncol(X.mat) <= 0 || nrow(y.vec) <= 0 || ncol(y.vec) <= 0)  
   {
     error("Feature matrix or Label vec has unexpected dimensions")
   }
   
-  step_size <- 0.1
-  #in 1:5 because nfolds is given as 5 just for trial need to look for ways how to find distinct elements in fold.vec
-  #need to ask how to find number of fold from fol.vec so that we can replace 1:5 with 1:n.folds
-  train.loss.mat <- matrix(,max.iterations,4)
-  validation.loss.mat <- matrix(,max.iterations,4)
-  n.folds <- max(fold.vec)
+  train.loss.mat <- matrix(,max.iterations, n.folds)
+  validation.loss.mat <- matrix(,max.iterations, n.folds)
+  # n.folds <- max(fold.vec)
   for(fold.i in 1:n.folds)
   {
     validation_indices <- which(fold.vec %in% c(fold.i))
