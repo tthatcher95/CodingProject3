@@ -29,6 +29,7 @@ NNetIterations <- function(
   n.hidden.units, #u 
   is.train
 ){
+  
   X.unscaled.mat <- as.matrix(X.mat[,-1])
   X.scaled.mat <- scale(X.unscaled.mat)
   v <- matrix(rnorm(ncol(X.scaled.mat) * n.hidden.units),ncol(X.scaled.mat), n.hidden.units)
@@ -43,7 +44,7 @@ NNetIterations <- function(
     }
     z <- sigmoid(A) #2
     b <- as.numeric(z %*% w)
-    pred.mat[,i] <- b
+    pred.mat[, i] <- b
     delta.w <- b - y.vec
     
     A.deriv <- z * (rep(1,n.hidden.units) - z)
@@ -51,6 +52,7 @@ NNetIterations <- function(
     
     grad.w <- t(z) %*% delta.w / nrow(X.scaled.mat)
     grad.v <- t(X.scaled.mat) %*% delta.v / nrow(X.scaled.mat)
+    
     ## take a step
     w <- as.numeric(w - step.size * grad.w)
     v <- v - step.size * grad.v
