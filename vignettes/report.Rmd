@@ -18,8 +18,7 @@ knitr::opts_chunk$set(
 
 
 ```{r data}
-usethis::use_package("codingProject2")
-#usethis::use_package("modeest")
+usethis::use_package("CodingProject3")
 data.name.vec <- c(
   "spam",
   "SAheart",
@@ -46,11 +45,11 @@ data.list <- list(
     label.vec=ElemStatLearn::zip.train[is.binary,1],
     feature.mat=ElemStatLearn::zip.train[is.binary,-1]),
   prostate=list(
-    label.vec=ElemStatLearn::prostate$lpsa,
-    feature.mat=as.matrix(ElemStatLearn::prostate[, -c(9,10)])),
+    label.vec=as.vector(ElemStatLearn::prostate[,9]),
+    feature.mat=as.matrix(ElemStatLearn::prostate[,1:8])),
   ozone=list(
     label.vec=ElemStatLearn::ozone$ozone,
-    feature.mat=as.matrix(ElemStatLearn::ozone[, -ncol(ElemStatLearn::ozone)]))
+    feature.mat=as.matrix(ElemStatLearn::ozone[,-1]))
 )
 n.folds <- 4
 resultsList <- list()
@@ -80,20 +79,22 @@ for(data.name in names(data.list))
   penalty.vec <- c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5)
   result.mat.list <- list()
   
-  for(test.fold in 1:n.folds)
+  for(test.fold in 1:length(unique(fold.vec)))
   {
     is.test <- fold.vec == test.fold
     is.train <- !is.test
-    X.train <- X.mat[is.train,]
-    y.train <- y.vec[is.train]
+    
+    fold_data <- which(fold.vec == test.fold)
+    
+    X.train <- X.mat[-fold_data ,]
+    X.valid <- X.mat[fold_data ,]
+
+    y.train <- y.vec[-fold_data]
+    y.valid <- y.vec[fold_data]
     
     fold.vec.train <- sample(rep(1:n.folds, l=nrow(X.train)))
     
-    print(test.fold)
-    # print(y.train)
-    # print(fold.vec)
-    
-    if(data.name == "prostate" || data.name == "ozone")
+    if(data.name == "prostate" | data.name == "ozone")
     {  
        #For each train/test split, to show that your algorithm is actually learning something     non-trivial from          the inputs/features, compute a baseline predictor that ignores the inputs/features.
        #Regression: the mean of the training labels/outputs.
@@ -103,18 +104,14 @@ for(data.name in names(data.list))
        # print(data.name)
        # print(data.list[[data.name]])
     
-       resultES <- codingProject2::LMSquareLossEarlyStoppingCV(X.train,
+       resultES <- CodingProject3::NNetEarlyStoppingCV(X.train,
                                                y.train,
-                                               fold.vec.train,
-                                               max.iterations)
-       #resultREG <- codingProject2::LMSquareLossL2CV(X.train,
-       #                                              y.train,
-       #                                              fold.vec.train,
-       #                                              penalty.vec)
+                                               max.iterations,
+                                               0.5,
+                                               30)
        
        str(resultES)
-       #str(resultREG)
-    
+
        pred.prob.list[test.fold] <- list(
          earlyStopping=resultES$predict(one.data.set$feature.mat[is.test,]),
          #L2regularized=resultREG$predict(one.data.set$feature.mat[is.test,]),
