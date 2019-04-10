@@ -34,6 +34,8 @@ NNetIterations <- function(
   v <- matrix(rnorm(ncol(X.scaled.mat) * n.hidden.units),ncol(X.scaled.mat), n.hidden.units)
   w <- rnorm(n.hidden.units)
   
+  is.binary <- all(y.vec %in% c(1, -1))
+  
   pred.mat <- matrix(,nrow(X.scaled.mat), max.iterations)
   for(i in 1:max.iterations)
   {
@@ -44,7 +46,14 @@ NNetIterations <- function(
     z <- sigmoid(A) #2
     b <- as.numeric(z %*% w)
     pred.mat[,i] <- b
-    delta.w <- b - y.vec
+    delta.w <- if(is.binary)
+    {
+      -y.train * sigmoid(-y.train * b) 
+    }
+    else
+    {
+      b - y.vec
+    }
     
     A.deriv <- z * (rep(1,n.hidden.units) - z)
     delta.v <- diag(delta.w) %*% A.deriv %*% diag(w)
