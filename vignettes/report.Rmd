@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r data}
 usethis::use_package("CodingProject3")
+usethis::use_package("ggplot2")
 data.name.vec <- c(
   "spam",
   "SAheart",
@@ -45,8 +46,8 @@ data.list <- list(
     label.vec=ElemStatLearn::zip.train[is.binary,1],
     feature.mat=ElemStatLearn::zip.train[is.binary,-1]),
   prostate=list(
-    label.vec=as.numeric(ElemStatLearn::prostate[,9]),
-    feature.mat=as.matrix(ElemStatLearn::prostate[,1:8])),
+    label.vec=as.numeric(ElemStatLearn::prostate$lpsa),
+    feature.mat=as.matrix(ElemStatLearn::prostate[,-c(9, 10)])),
   ozone=list(
     label.vec=ElemStatLearn::ozone$ozone,
     feature.mat=as.matrix(ElemStatLearn::ozone[,-1]))
@@ -116,12 +117,10 @@ for(data.name in names(data.list))
                                                step.size=0.5,
                                                n.hidden.units=30)
 
-       pred.prob.list[test.fold] <- list(
-         earlyStopping=resultES$predict(one.data.set$feature.mat[is.test,]),
-         #L2regularized=resultREG$predict(one.data.set$feature.mat[is.test,]),
-         baseline=rep(baseline, sum(is.test)))
-       
-       print(pred.prob.list[[test.fold]])
+         # pred.prob.list[test.fold] <- list(
+         # earlyStopping=resultES$predict(one.data.set$feature.mat[is.test,]),
+         # #L2regularized=resultREG$predict(one.data.set$feature.mat[is.test,]),
+         # baseline=rep(baseline, sum(is.test)))
        
          # For each data set, compute a 4 x 3 matrix of mean test loss values:
          # each of the four rows are for a specific test set,
@@ -182,6 +181,12 @@ for(data.name in names(data.list))
   # Then  LMSquareLossEarlyStoppingCV LMSquareLossIterations for prostate and ozone)
 }
 ```
+```{r}
+ggplot(resultsList[5]$train.loss.vec)
+ggplot(resultsList[5]$validation.loss.vec)
+ggplot(resultsList[6]$train.loss.vec)
+ggplot(resultsList[6]$validation.loss.vec)
+```
 
 ## Data set 1: spam
 
@@ -199,10 +204,10 @@ comment on difference between NN and baseline.
 
 ```{r}
 #plot the two loss functions.
-ggplot(resultsList[1]$train.loss.vec)
-ggplot(resultsList[1]$validation.loss.vec)
-ggplot(resultsList[2]$train.loss.vec)
-ggplot(resultsList[2]$validation.loss.vec)
+ggplot(as.data.frame(resultES$mean.train.loss.vec))
+ggplot(as.data.frame(resultES$mean.validation.loss))
+# ggplot(resultsList[2]$train.loss.vec)
+# ggplot(resultsList[2]$validation.loss.vec)
 ```
 
 What are the optimal regularization parameters?

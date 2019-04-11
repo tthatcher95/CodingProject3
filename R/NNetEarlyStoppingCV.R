@@ -34,7 +34,7 @@
 NNetEarlyStoppingCV <- function(
   X.mat,
   y.vec,
-  fold.vec=sample(rep(1:n.folds), length(y.vec)),
+  fold.vec=NULL,
   max.iterations,
   step.size,
   n.hidden.units,
@@ -56,6 +56,10 @@ NNetEarlyStoppingCV <- function(
     stop("Output matrix has unexpected dimensions")
   }
   
+  if(is.null(fold.vec)) {
+    fold.vec <- sample(rep(1:4, l=nrow(X.mat)))
+  }
+  
   train.loss.mat <- matrix(,max.iterations, n.folds)
   validation.loss.mat <- matrix(,max.iterations, n.folds)
   # n.folds <- max(fold.vec)
@@ -69,37 +73,38 @@ NNetEarlyStoppingCV <- function(
     Y.train <- y.vec[-fold_data]
     Y.valid <- y.vec[fold_data]
     
-    n_rows_validation_set <- nrow(validation_set)
-    n_rows_train_set <- nrow(train_set)
+    # n_rows_validation_set <- nrow(validation_set)
+    # n_rows_train_set <- nrow(train_set)
     
-    W <- NNetIterations(X.train,Y.train, max.iterations, step_size, n.hidden.units, fold.vec)
+    W <- NNetIterations(X.train, Y.train, max.iterations, step.size, n.hidden.units, fold.vec)
+    
     for(prediction.set.name in c("train", "validation")){
       if(identical(prediction.set.name, "train")){
-        to.be.predicted <- train_set
+        to.be.predicted <- X.train
       }
       else{
-        to.be.predicted <- validation_set
+        to.be.predicted <- X.valid
       }
-      pred <- as.matrix(cbind(1,to.be.predicted)) %*% as.matrix(W) 
+      
+      pred.mat <- W$pred.mat
+      
       if(identical(prediction.set.name, "train")){
-        loss.mat <-ifelse(pred.mat>0.5, 1, 0) != train_labels
-        train.loss.mat[,fold.i] <- colMeans(loss.mat)
+        train.loss.mat[,fold.i] = colMeans((pred.mat - Y.valid)^2)
       }
       else{
-        loss.mat <-ifelse(pred.mat>0.5, 1, 0) != validation_labels
-        validation.loss.mat[,fold.i] <- colMeans(loss.mat)
+        pred.valid.mat <- W$predict(X.valid)
+        validation.loss.mat[,fold.i] = colMeans((pred.valid.mat - Y.valid)^2)
       }
     }
   }
   mean.validation.loss.vec <- rowMeans(validation.loss.mat)
   mean.train.loss.vec <- rowMeans(train.loss.mat)
-  selected.steps <- which.min(mean.validation.loss.vec)
-  # w.head <- LMLogisticLossIterations(X.mat,y.vec, selected.steps, step_size)
-  weight_vec <- w.head[,selected.steps]
+  selected.steps = which(mean.validation.loss.vec == min(mean.validation.loss.vec), arr.ind = TRUE)
+  best_model <- NNetIterations(X.train,Y.train, max.iterations, step.size, n.hidden.units, fold.vec)
+  weight_vec <- best_model$pred.mat[,selected.steps]
   
-  returnList <- list(mean.validation.loss = mean.validation.loss.vec,
-                     mean.train.loss.vec =   mean.train.loss.vec,
-                     selected.steps = selected.steps, weight.vec = weight_vec,
-                     predict=function(X.test){return(as.matrix(X.test) %*% weight_vec)})
-  return(returnList)
+  list(
+    mean.validation.loss = mean.validation.loss.vec,
+    mean.train.loss.vec =  mean.train.loss.vec,
+    selected.steps = selected.steps)
 }
