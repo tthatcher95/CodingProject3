@@ -8,19 +8,25 @@ context("test-NNetEarlyStoppingCV")
 
 
 test_that("NNetEarlyStoppingCV computes the right demensions", {
-  # data(spam, package = "ElemStatLearn")
-  # X.mat<-spam[1:100,-58]
-  # X.scaled.mat<-scale(X.mat, center = TRUE, scale = TRUE)
-  # y.vec<-spam[1:100, 58]
+  data(SAheart , package = "ElemStatLearn")
+  X.mat<-SAheart [1:50,-9]
+  y.vec<-SAheart [1:50, 9]
+  max.iterations <- 100
+  step.size <- .5
+  n.hidden.units <- 2
+  res <- NNetEarlyStoppingCV(X.mat, y.vec, fold.vec, max.iterations, n.hidden.units)
   
-  # expect_equal(nrow(res), 1)
+  expect_equal(length(res), 7)
 })
 
 test_that("NNetEarlyStoppingCV throws errors", {
-  # data(spam, package = "ElemStatLearn")
-  # X.mat<-spam[1:100,-58]
-  # X.scaled.mat<-scale(X.mat, center = TRUE, scale = TRUE)
-  # y.vec<-spam[1:100, 58]
+  data(SAheart , package = "ElemStatLearn")
+  X.mat<-SAheart [1:50,-9]
+  y.vec<-SAheart [1:50, 9]
+  max.iterations <- 100
+  step.size <- .5
+  n.hidden.units <- 2
+  res <- NNetEarlyStoppingCV(X.mat, y.vec, fold.vec, max.iterations, n.hidden.units)
   
-  # expect_error()
+  expect_error()
 })
