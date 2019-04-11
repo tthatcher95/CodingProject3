@@ -43,12 +43,17 @@ NNetEarlyStoppingCV <- function(
   
   if(!is.matrix(X.mat))
   {
-    error("Feature matrix or Label vec has unexpected dimensions")
+    stop("Feature matrix or Label vec has unexpected dimensions")
   }
   
-  if(nrow(X.mat) <= 0 || ncol(X.mat) <= 0 || nrow(y.vec) <= 0 || ncol(y.vec) <= 0)  
+  if(nrow(X.mat) <= 0 | ncol(X.mat) <= 0)  
   {
-    error("Feature matrix or Label vec has unexpected dimensions")
+    stop("Feature matrix has unexpected dimensions")
+  }
+  
+  if(length(y.vec) <= 0)  
+  {
+    stop("Output matrix has unexpected dimensions")
   }
   
   train.loss.mat <- matrix(,max.iterations, n.folds)
@@ -56,15 +61,18 @@ NNetEarlyStoppingCV <- function(
   # n.folds <- max(fold.vec)
   for(fold.i in 1:n.folds)
   {
-    validation_indices <- which(fold.vec %in% c(fold.i))
-    validation_set <- X.mat[validation_indices,]
-    train_set <- X.mat[-validation_indices,]
-    train_labels <- y.vec[-validation_indices]
-    validation_labels <- y.vec[validation_indices] 
+    fold_data <- which(fold.vec == fold.i)
+    
+    X.train <- X.mat[-fold_data ,]
+    X.valid <- X.mat[fold_data ,]
+    
+    Y.train <- y.vec[-fold_data]
+    Y.valid <- y.vec[fold_data]
+    
     n_rows_validation_set <- nrow(validation_set)
     n_rows_train_set <- nrow(train_set)
     
-    W <- NNetIterations(train_set,train_labels, max.iterations, step_size, n.hidden.units, fold.vec)
+    W <- NNetIterations(X.train,Y.train, max.iterations, step_size, n.hidden.units, fold.vec)
     for(prediction.set.name in c("train", "validation")){
       if(identical(prediction.set.name, "train")){
         to.be.predicted <- train_set

@@ -45,7 +45,7 @@ data.list <- list(
     label.vec=ElemStatLearn::zip.train[is.binary,1],
     feature.mat=ElemStatLearn::zip.train[is.binary,-1]),
   prostate=list(
-    label.vec=as.vector(ElemStatLearn::prostate[,9]),
+    label.vec=as.numeric(ElemStatLearn::prostate[,9]),
     feature.mat=as.matrix(ElemStatLearn::prostate[,1:8])),
   ozone=list(
     label.vec=ElemStatLearn::ozone$ozone,
@@ -56,10 +56,15 @@ resultsList <- list()
 baseline <- list()
 mean.loss.list <- list()
 #current.set.matrix <-
+str(data.list)
 for(data.name in names(data.list))
 {
+  
   one.data.set <- data.list[[data.name]]
   set.seed(1)
+  
+  
+
   
   # print("This is one.data.set")
   # print(one.data.set)
@@ -74,9 +79,7 @@ for(data.name in names(data.list))
   X.mat <- one.data.set$feature.mat
   y.vec <- one.data.set$label.vec
   fold.vec <- sample(rep(1:n.folds, l=nrow(X.mat)))
-  max.iterations <- 30
-  
-  penalty.vec <- c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5)
+  max.ite <- 30
   result.mat.list <- list()
   
   for(test.fold in 1:length(unique(fold.vec)))
@@ -92,11 +95,14 @@ for(data.name in names(data.list))
     y.train <- y.vec[-fold_data]
     y.valid <- y.vec[fold_data]
     
+    
     fold.vec.train <- sample(rep(1:n.folds, l=nrow(X.train)))
     
     if(data.name == "prostate" | data.name == "ozone")
     {  
-       #For each train/test split, to show that your algorithm is actually learning something     non-trivial from          the inputs/features, compute a baseline predictor that ignores the inputs/features.
+        print(one.data.set$label.vec)
+       #For each train/test split, to show that your algorithm is actually learning something                  non-trivial from the inputs/features, compute a baseline predictor that ignores the                     inputs/features.
+      
        #Regression: the mean of the training labels/outputs.
     
        baseline <- mean(y.train)
@@ -106,11 +112,9 @@ for(data.name in names(data.list))
     
        resultES <- CodingProject3::NNetEarlyStoppingCV(X.train,
                                                y.train,
-                                               max.iterations,
-                                               0.5,
-                                               30)
-       
-       str(resultES)
+                                               max.iterations=max.ite,
+                                               step.size=0.5,
+                                               n.hidden.units=30)
 
        pred.prob.list[test.fold] <- list(
          earlyStopping=resultES$predict(one.data.set$feature.mat[is.test,]),
