@@ -8,19 +8,27 @@ context("test-NNetIterations")
 
 
 test_that("NNetIterations computes the right demensions", {
-  # data(spam, package = "ElemStatLearn")
-  # X.mat<-spam[1:100,-58]
-  # X.scaled.mat<-scale(X.mat, center = TRUE, scale = TRUE)
-  # y.vec<-spam[1:100, 58]
-
-  # expect_equal(nrow(res), 1)
+  data(ozone, package="ElemStatLearn")
+  X.mat <- as.matrix(ozone[,-1])
+  y.vec <- as.vector(ozone[,1])
+  n.hidden.units <- 5
+  max.iterations <- 100
+  is.train <- TRUE
+  step.size <- 0.1
+  res <- NNetIterations( X.mat, y.vec, max.iterations, step.size, n.hidden.units, is.train)
+  
+  expect_equal(length(res), 4)
 })
 
 test_that("NNetIterations throws errors", {
-  # data(spam, package = "ElemStatLearn")
-  # X.mat<-spam[1:100,-58]
-  # X.scaled.mat<-scale(X.mat, center = TRUE, scale = TRUE)
-  # y.vec<-spam[1:100, 58]
+  data(ozone, package="ElemStatLearn")
+  X.mat <- as.matrix(ozone[,-1])
+  y.vec <- as.vector(ozone[,1])
+  n.hidden.units <- 5
+  max.iterations <- 100
+  is.train <- TRUE
+  step.size <- 0.1
+  res <- NNetIterations( X.mat, y.vec, max.iterations, step.size, n.hidden.units, is.train)
   
-  # expect_error()
+  expect_error()
 })
