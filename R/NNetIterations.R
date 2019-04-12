@@ -29,6 +29,11 @@ NNetIterations <- function(
   n.hidden.units, #u
   is.train
 ){
+  if(!is.matrix(X.mat))
+  {
+    stop("Feature matrix is not a matrix")
+  }
+  
   X.unscaled.mat <- as.matrix(X.mat[,-1])
   X.scaled.mat <- scale(X.unscaled.mat)
   

@@ -22,13 +22,12 @@ test_that("NNetIterations computes the right demensions", {
 
 test_that("NNetIterations throws errors", {
   data(ozone, package="ElemStatLearn")
-  X.mat <- as.matrix(ozone[,-1])
+  X.mat <- c(ozone[,-1])
   y.vec <- as.vector(ozone[,1])
   n.hidden.units <- 5
   max.iterations <- 100
   is.train <- TRUE
   step.size <- 0.1
-  res <- NNetIterations( X.mat, y.vec, max.iterations, step.size, n.hidden.units, is.train)
   
-  expect_error()
+  expect_error(NNetIterations( X.mat, y.vec, max.iterations, step.size, n.hidden.units, is.train), "Feature matrix is not a matrix")
 })

@@ -34,7 +34,7 @@
 NNetEarlyStoppingCV <- function(
   X.mat,
   y.vec,
-  fold.vec=NULL,
+  fold.vec=sample(rep(1:n.folds), length(y.vec)),
   max.iterations,
   step.size,
   n.hidden.units,
@@ -43,7 +43,7 @@ NNetEarlyStoppingCV <- function(
   
   if(!is.matrix(X.mat))
   {
-    stop("Feature matrix or Label vec has unexpected dimensions")
+    stop("Feature matrix is not a matrix")
   }
   
   if(nrow(X.mat) <= 0 | ncol(X.mat) <= 0)  
