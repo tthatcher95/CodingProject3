@@ -324,7 +324,3 @@ comment on difference between NN and baseline.
 ```
 
 What are the optimal regularization parameters?
-
-```{r}
-# selected
-``
