@@ -3,9 +3,11 @@ cache: packages
 warnings_are_errors: true
 sudo: required
 addons:
-  apt:
+  r_packages:
     packages:
       - knitr
       - rmarkdown
       - ElemStatLearn
       - usethis
+      - ggplot2
+      - pander
