@@ -34,7 +34,7 @@
 NNetEarlyStoppingCV <- function(
   X.mat,
   y.vec,
-  fold.vec=sample(rep(1:n.folds), length(y.vec)),
+  fold.vec=NULL,
   max.iterations,
   step.size,
   n.hidden.units,
