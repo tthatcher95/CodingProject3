@@ -47,7 +47,7 @@ Y <- diag(y.train)
 head(delta.w <- -y.train * sigmoid(-y.train * b))
 head(A.deriv <- Z * (1 - Z)) #S'[A]
 head(delta.v <- diag(delta.w) %*% A.deriv %*% diag((w))) #5
-head(dv <- unname(dw * A.deriv * matrix(w, nrow(A.deriv), ncol(A.deriv), byrow=TRUE)))
+head(dv <- unname(delta.w * A.deriv * matrix(w, nrow(A.deriv), ncol(A.deriv), byrow=TRUE)))
 head(grad.w <- t(Z) %*% delta.w / nrow(X.sc)) #6
 head(grad.v <- t(X.train) %*% dv / nrow(X.train)) #7
 
