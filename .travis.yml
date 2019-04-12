@@ -2,3 +2,10 @@ language: R
 cache: packages
 warnings_are_errors: true
 sudo: required
+addons:
+  apt:
+    packages:
+      - knitr
+      - rmarkdown
+      - ElemStatLearn
+      - usethis
