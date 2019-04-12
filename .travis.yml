@@ -2,10 +2,3 @@ language: R
 cache: packages
 warnings_are_errors: false
 sudo: required
-install:
-  ## For a CRAN package
-  - ./travis-tool.sh install_r knitr
-  - ./travis-tool.sh install_r rmarkdown
-  - ./travis-tool.sh install_r ElemStatLearn
-  - ./travis-tool.sh install_r usethis
-  - ./travis-tool.sh install_r pander

@@ -18,8 +18,9 @@ knitr::opts_chunk$set(
 
 
 ```{r data}
-usethis::use_package("CodingProject3")
 usethis::use_package("ggplot2")
+library(ElemStatLearn)
+
 data.name.vec <- c(
   "spam",
   "SAheart",
@@ -27,7 +28,6 @@ data.name.vec <- c(
   "prostate",
   "ozone")
 data.list <- list()
-library(ElemStatLearn)
 for(data.name in data.name.vec)
 {
   data(list = data.name, package="ElemStatLearn")
